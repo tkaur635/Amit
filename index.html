@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Special For You</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      color: #333;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    #question-section, #birthday-section {
+      display: none;
+      padding: 50px 20px;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+
+    .option {
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .option:hover {
+      background-color: #ffe0e6;
+    }
+
+    h1 {
+      margin-top: 50px;
+      font-size: 2.5em;
+    }
+
+    .show {
+      display: block !important;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: fall 5s linear infinite;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .heart::before, .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(45deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(45deg);
+      }
+    }
+
+    @keyframes burst {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+        background: red;
+      }
+      50% {
+        transform: scale(2);
+        background: pink;
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+        background: transparent;
+      }
+    }
+
+    @keyframes scatter {
+      0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.3) translate(var(--x), var(--y));
+        opacity: 0;
+      }
+    }
+
+    .piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      border-radius: 50%;
+      animation: scatter 1s forwards;
+      pointer-events: none;
+    }
+
+    .birthday-img {
+      margin-top: 30px;
+      max-width: 300px;
+      width: 90%;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="question-section" class="show">
+    <h1>Which romantic experience have I always dreamed with you but haven't done yet?</h1>
+    <div class="option-grid">
+      <div class="option" onclick="checkAnswer(this)">Hot air ballon ride Over Goa</div>
+      <div class="option" onclick="checkAnswer(this)">Candlelight dinner on a cruise</div>
+      <div class="option" onclick="checkAnswer(this)">Night camping in the hills of Simla</div>
+      <div class="option" onclick="checkAnswer(this)">Watching the sunset while riding a camel in desert</div>
+    </div>
+  </div>
+
+  <div id="birthday-section">
+    <h1>Happy Birthday To You BABY 🎉🎂</h1>
+    <p>If I had to choose again, I'd still choose you - in every life, in every version of me. No matter where or who I am, I'd always find you and love you all over again.". 💖</p>
+    <img src="photo.png" alt="Special Moment" class="birthday-img">
+    <div class="BABY-text">BABY</div>
+    <div class="boy"></div>
+    <div class="proposal-heart">❤️</div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bg-music" loop>
+    <source src="happy.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Heart animation -->
+  <div class="hearts" id="hearts-container"></div>
+
+  <script>
+    function checkAnswer(el) {
+      if (el.innerText.trim().toLowerCase() === "candlelight dinner on a cruise") {
+        document.getElementById('question-section').classList.remove('show');
+        document.getElementById('birthday-section').classList.add('show');
+        startHearts();
+
+        const audio = document.getElementById('bg-music');
+        audio.play().catch(() => {
+          // If blocked by autoplay policy, require user to click play manually.
+          alert("Click somewhere to allow music to play 🎶");
+        });
+      } else {
+        el.style.backgroundColor = "#f99";
+        el.innerText = "Oops! Try again ❤️";
+      }
+    }
+
+    function startHearts() {
+      const container = document.getElementById("hearts-container");
+      setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = 4 + Math.random() * 2 + "s";
+        container.appendChild(heart);
+
+        heart.addEventListener('click', function () {
+          burstEffect(heart);
+        });
+
+        setTimeout(() => {
+          burstEffect(heart);
+        }, 2000);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 6000);
+      }, 300);
+    }
+
+    function burstEffect(heart) {
+      heart.style.animation = 'burst 0.5s forwards';
+      createPieces(heart);
+      setTimeout(() => {
+        heart.remove();
+      }, 500);
+    }
+
+    function createPieces(heart) {
+      const numPieces = 10;
+      const heartRect = heart.getBoundingClientRect();
+      const heartCenterX = heartRect.left + heartRect.width / 2;
+      const heartCenterY = heartRect.top + heartRect.height / 2;
+
+      for (let i = 0; i < numPieces; i++) {
+        const piece = document.createElement('div');
+        piece.classList.add('piece');
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 50 + 50;
+
+        const xOffset = distance * Math.cos(angle);
+        const yOffset = distance * Math.sin(angle);
+
+        piece.style.left = `${heartCenterX - 5}px`;
+        piece.style.top = `${heartCenterY - 5}px`;
+
+        piece.style.setProperty('--x', `${xOffset}px`);
+        piece.style.setProperty('--y', `${yOffset}px`);
+
+        document.body.appendChild(piece);
+
+        setTimeout(() => {
+          piece.remove();
+        }, 1000);
+      }
+    }
+  </script>
+
+</body>
+</html>
